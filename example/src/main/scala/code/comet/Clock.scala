@@ -28,7 +28,7 @@ class Clock extends CometActor {
   // initial render uses the label's ui
   def render = bind("time" -> timeLabel.ui)
 
-  // receive the JsCmd sent by the above to the ui
+  // receive the JsCmd sent by the above and send it to the ui
   override def lowPriority : PartialFunction[Any, Unit] = {
     case cmd: JsCmd ⇒ partialUpdate(cmd)
   }
