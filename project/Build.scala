@@ -1,23 +1,43 @@
+import com.earldouglas.xwp.XwpPlugin
 import sbt._
 import Keys._
   
 object Build extends Build {
 
+  XwpPlugin.jetty()
+
+  val jettyVersion = "9.2.6.v20141205"
+
   val defaults = Seq(
     organization := "com.casualmiracles",
     scalaVersion := "2.11.5",
+    scalacOptions in (Compile, compile) += "-deprecation"
+  )
 
-    scalacOptions in (Compile, compile) += "-deprecation",
+  val coreSettings = Seq(
     libraryDependencies ++= List(
-      "org.scalaz" %% "scalaz-core" % "7.1.0" % "compile",
-      "io.reactivex" %% "rxscala" % "0.23.1" % "compile",
-      "net.liftweb" %% "lift-webkit" % "2.6" % "compile"
+      "org.scalaz"        %% "scalaz-core"    % "7.1.0"       % "compile",
+      "io.reactivex"      %% "rxscala"        % "0.23.1"      % "compile",
+      "net.liftweb"       %% "lift-webkit"    % "2.6"         % "compile"
     )
   )
 
-  lazy val core = project.settings(defaults: _*)
+  val exampleSettings = Seq(
+    libraryDependencies ++= List(
+      "org.eclipse.jetty" % "jetty-webapp"    % jettyVersion  % "container, test, compile",
+      "org.eclipse.jetty" % "jetty-plus"      % jettyVersion  % "container, test, compile",
+      "org.eclipse.jetty" % "jetty-servlets"  % jettyVersion  % "container, test, compile"
+    )
+  )
 
-  lazy val example = project.settings(defaults: _*).dependsOn(core)
+  lazy val core = Project(
+    "core", file("core"),
+    settings = defaults ++ coreSettings)
+
+  lazy val example = Project(
+    "example", file("example"),
+    settings = defaults ++ coreSettings ++ exampleSettings ++ XwpPlugin.warSettings ++ XwpPlugin.webappSettings ++ XwpPlugin.jetty(port = 8080)
+  ).dependsOn(core)
 
   lazy val root = Project("rxlift", file(".")).aggregate(core, example)
 }
