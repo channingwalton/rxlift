@@ -5,10 +5,8 @@ import java.util.UUID
 import net.liftweb.http.SHtml
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import rx.lang.scala.{Subject, Observable}
-import net.liftweb.http.SHtml.ElemAttr._
 
-object RxHtml {
-
+object Components {
   private def genId: String = UUID.randomUUID().toString
 
   def label: Component[String, String] = Component { (in: Observable[String]) ⇒
