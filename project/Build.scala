@@ -24,9 +24,10 @@ object Build extends Build {
 
   val exampleSettings = Seq(
     libraryDependencies ++= List(
-      "org.eclipse.jetty" % "jetty-webapp"    % jettyVersion  % "container, test, compile",
-      "org.eclipse.jetty" % "jetty-plus"      % jettyVersion  % "container, test, compile",
-      "org.eclipse.jetty" % "jetty-servlets"  % jettyVersion  % "container, test, compile"
+      "net.liftmodules"   %% "lift-jquery-module_2.6" % "2.8"         % "compile",
+      "org.eclipse.jetty" % "jetty-webapp"            % jettyVersion  % "container, test, compile",
+      "org.eclipse.jetty" % "jetty-plus"              % jettyVersion  % "container, test, compile",
+      "org.eclipse.jetty" % "jetty-servlets"          % jettyVersion  % "container, test, compile"
     )
   )
 
