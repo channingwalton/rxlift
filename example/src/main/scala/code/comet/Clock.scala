@@ -1,31 +1,28 @@
 package code.comet
 
 import java.util.Date
+import java.util.concurrent.TimeUnit
 
+import com.casualmiracles.rxlift.Components._
+import com.casualmiracles.rxlift.Out
 import net.liftweb.common.Full
 import net.liftweb.http.CometActor
-import net.liftweb.http.js.JsCmds.SetHtml
-import net.liftweb.util.Schedule
-import net.liftweb.util.Helpers.now
+import net.liftweb.http.js.JsCmd
+import rx.lang.scala.Observable
 
-import scala.xml.Text
+import scala.concurrent.duration.Duration
 
 class Clock extends CometActor {
+
   override def defaultPrefix = Full("clk")
-  def render = bind("time" -> timeSpan)
 
-  def timeSpan = (<span id="time">{now}</span>)
+  val ticker: Observable[String] = Observable.interval(Duration(2, TimeUnit.SECONDS)).map(_ ⇒ new Date().toString)
+  val timeLabel: Out[String] = label.run(ticker)
+  timeLabel.jscmd.map(this ! _).subscribe()
 
-  // schedule a ping every 10 seconds so we redraw
-  Schedule.schedule(this, Tick, 10000L)
+  def render = bind("time" -> timeLabel.ui)
 
   override def lowPriority : PartialFunction[Any, Unit] = {
-    case Tick => {
-      println("Got tick " + new Date())
-      partialUpdate(SetHtml("time", Text(now.toString)))
-      // schedule an update in 10 seconds
-      Schedule.schedule(this, Tick, 10000L)
-    }
+    case cmd: JsCmd ⇒ partialUpdate(cmd)
   }
 }
-case object Tick
