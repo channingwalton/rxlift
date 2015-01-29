@@ -33,4 +33,3 @@ class Chat extends RxCometActor {
   def render = bind("chat", "messages" -> messageArea.ui, "input" -> input.ui)
 
 }
-
