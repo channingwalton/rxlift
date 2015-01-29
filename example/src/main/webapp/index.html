@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type"/>
     <title>Home</title>
-  </head>
-  <body class="lift:content_id=main">
-    <div id="main" class="lift:surround?with=default;at=content">
-      <h2>Welcome to RxLift!</h2>
-      <p>
-          <h4>Current Time</h4>
-	  <lift:comet type="Clock" name="Other">
-          <clk:time>Missing Clock</clk:time>
-      </lift:comet>
-          <h4>There is an echo in here</h4>
-      <lift:comet type="Echo" name="Other">
-          <echo:echo></echo:echo>
-      </lift:comet>
-      </p>
-    </div>
-  </body>
+</head>
+<body class="lift:content_id=main">
+<div id="main" class="lift:surround?with=default;at=content">
+    <h2>Welcome to RxLift!</h2>
+
+    <h4>Current Time</h4>
+    <lift:comet type="Clock">
+        <clk:time>Missing Clock</clk:time>
+    </lift:comet>
+    <h4>There is an echo in here</h4>
+    <lift:comet type="Echo">
+        <echo:echo></echo:echo>
+    </lift:comet>
+    <h3>Chat</h3>
+    <lift:comet type="Chat">
+        <form class="lift:form.ajax">
+            <chat:messages>no messages :-(</chat:messages>
+            <br/>
+            Speak!&nbsp;<chat:input>no messages :-(</chat:input>
+        </form>
+    </lift:comet>
+</div>
+</body>
 </html>
 

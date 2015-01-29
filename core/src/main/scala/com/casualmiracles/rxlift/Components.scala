@@ -27,4 +27,13 @@ object Components {
 
     Out(subject, js, ui, Some(id))
   }
+
+  def textArea: Component[String, String] = Component { (in: Observable[String]) ⇒
+    val id = genId
+    val subject = Subject[String]()
+    val ui = SHtml.ajaxTextarea("", subject.onNext(_), "id" → id)
+    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
+
+    Out(subject, js, ui, Some(id))
+  }
 }
