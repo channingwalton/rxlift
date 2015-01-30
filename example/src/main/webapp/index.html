@@ -8,13 +8,11 @@
 <div id="main" class="lift:surround?with=default;at=content">
     <h2>Welcome to RxLift!</h2>
 
-    <h4>Current Time</h4>
     <lift:comet type="Clock">
-        <clk:time>Missing Clock</clk:time>
+        <p>Current Time: <clk:time>Missing Clock</clk:time></p>
     </lift:comet>
-    <h4>There is an echo in here</h4>
     <lift:comet type="Echo">
-        <echo:echo></echo:echo>
+        <p>Echo: <echo:echo></echo:echo></p>
     </lift:comet>
     <h3>Chat</h3>
     <lift:comet type="Chat">
