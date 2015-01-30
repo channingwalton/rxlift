@@ -7,29 +7,35 @@ import net.liftweb.common.Full
 import rx.lang.scala.{Observable, Subject}
 import rx.lang.scala.subjects.BehaviorSubject
 
+case class Message(username: String, msg: String)
+
 object Chat {
-  val send: Subject[String] = BehaviorSubject[String]("Welcome")
-  val allMessages: Observable[String] = send.scan("")((a, b) ⇒ s"$a\n$b")
+  val send: Subject[Message] = BehaviorSubject[Message](Message("System", "Welcome"))
+  val allMessages: Observable[Seq[Message]] = send.scan(Seq.empty[Message])(_ :+ _)
 }
 
 class Chat extends RxCometActor {
 
   override def defaultPrefix = Full("chat")
 
-  val inputObservable = Subject[String]()
-  val input = text.run(inputObservable)
+  val username = text.run(Observable.just(""))
+
+  val msgObservable = Subject[String]()
+  val msg = text.run(msgObservable)
 
   // a textarea whose content is obtained from Chat.messages
-  val messageArea: Out[String] = textArea.run(Chat.allMessages)
+  def toString(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
+  val allMessages: Out[String] = textArea.run(Chat.allMessages.map(toString(_)))
 
   // send the user's message to everyone and blank their input field
-  val messageDistributor = input.values.map(m ⇒ {Chat.send.onNext(m); inputObservable.onNext("")} )
+  val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
+  val messageDistributor = messages.map(m ⇒ {Chat.send.onNext(m); msgObservable.onNext("")} )
 
   // subscribe to the distributor
   handleSubscription(messageDistributor)
 
-  publish(messageArea, input)
+  publish(allMessages, username, msg)
 
-  def render = bind("chat", "messages" -> messageArea.ui, "input" -> input.ui)
+  def render = bind("chat", "messages" -> allMessages.ui, "username" -> username.ui,  "msg" -> msg.ui)
 
 }
