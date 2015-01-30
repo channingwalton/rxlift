@@ -18,14 +18,14 @@ class Chat extends RxCometActor {
 
   override def defaultPrefix = Full("chat")
 
-  val username = text.run(Observable.just(""))
+  val username = text.run(Observable.empty)
 
   val msgObservable = Subject[String]()
   val msg = text.run(msgObservable)
 
   // a textarea whose content is obtained from Chat.messages
-  def toString(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
-  val allMessages: Out[String] = textArea.run(Chat.allMessages.map(toString(_)))
+  def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
+  val allMessages: Out[String] = textArea.run(Chat.allMessages.map(msgLine))
 
   // send the user's message to everyone and blank their input field
   val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
