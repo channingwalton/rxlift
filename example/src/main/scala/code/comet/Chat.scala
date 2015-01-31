@@ -22,7 +22,7 @@ class Chat extends RxCometActor {
   val username = text.run(Observable.empty)
 
   // make an initially disabled text component, enabled by the username being set
-  private val msgEditable = Observable.just(false).merge(username.values.map(_.trim.nonEmpty))
+  val msgEditable = Observable.just(false).merge(username.values.map(_.trim.nonEmpty))
   val editableMsg = editable(text, msgEditable)
 
   // run the editableMsh with an input observable used below to reset the input field

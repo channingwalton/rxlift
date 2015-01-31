@@ -38,10 +38,6 @@ object Components {
     Out(subject, js, ui, Some(id))
   }
 
-  def setProp(id: String, property: String, value: Boolean): JsCmd = Run(s"$$('#$id').prop('$property', $value)")
-
-  def setEditability(id: String, editable: Boolean): JsCmd = setProp(id, "disabled", !editable)
-
   def editable[I, O](component: Component[I, O], edit: Observable[Boolean]): Component[I, O] =
     Component { in ⇒
       val inner: Out[O] = component.run(in)
@@ -55,4 +51,9 @@ object Components {
       val editJsCmds = edit.map(setEditability(id, _))
       Out(inner.values, inner.jscmd.merge(editJsCmds), newUI, Some(id))
     }
+
+  private def setProp(id: String, property: String, value: String): JsCmd = Run(s"$$('#$id').prop('$property', $value)")
+
+  private def setEditability(id: String, editable: Boolean): JsCmd = setProp(id, "disabled", (!editable).toString)
+
 }
