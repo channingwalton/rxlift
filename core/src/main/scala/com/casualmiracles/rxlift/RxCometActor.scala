@@ -1,19 +1,19 @@
-package code.comet
+package com.casualmiracles.rxlift
 
-import com.casualmiracles.rxlift.Out
 import net.liftweb.http.CometActor
 import net.liftweb.http.js.JsCmd
 import rx.lang.scala.{Observable, Subscription}
+import scala.collection.mutable.ListBuffer
 
 trait RxCometActor extends CometActor {
 
-  var subscriptions: Seq[Subscription] = Seq.empty
+  val subscriptions: ListBuffer[Subscription] = ListBuffer.empty[Subscription]
   
   def publish(components: Out[_]*): Unit = {
     components.foreach(o ⇒ handleSubscription(o.jscmd.map(this ! _)))
   }
 
-  def handleSubscription[T](obs: Observable[T]): Unit = subscriptions = subscriptions :+ obs.subscribe()
+  def handleSubscription[T](obs: Observable[T]): Unit = subscriptions += obs.subscribe()
 
   final override def lowPriority : PartialFunction[Any, Unit] = {
     case cmd: JsCmd ⇒ partialUpdate(cmd)

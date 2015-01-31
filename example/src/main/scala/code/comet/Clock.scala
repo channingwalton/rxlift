@@ -4,7 +4,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 import com.casualmiracles.rxlift.Components._
-import com.casualmiracles.rxlift.Out
+import com.casualmiracles.rxlift.{RxCometActor, Out}
 import net.liftweb.common.Full
 import rx.lang.scala.Observable
 

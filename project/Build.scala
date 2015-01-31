@@ -1,7 +1,8 @@
 import com.earldouglas.xwp.XwpPlugin
 import sbt._
 import Keys._
-  
+import wartremover._
+
 object Build extends Build {
 
   XwpPlugin.jetty()
@@ -19,7 +20,9 @@ object Build extends Build {
       "org.scalaz"        %% "scalaz-core"    % "7.1.0"       % "compile",
       "io.reactivex"      %% "rxscala"        % "0.23.1"      % "compile",
       "net.liftweb"       %% "lift-webkit"    % "2.6"         % "compile"
-    )
+    ),
+    wartremoverErrors ++= Warts.all,
+    wartremoverExcluded ++= Seq("com.casualmiracles.rxlift.RxCometActor")
   )
 
   val exampleSettings = Seq(
@@ -28,7 +31,8 @@ object Build extends Build {
       "org.eclipse.jetty" % "jetty-webapp"            % jettyVersion  % "container, test, compile",
       "org.eclipse.jetty" % "jetty-plus"              % jettyVersion  % "container, test, compile",
       "org.eclipse.jetty" % "jetty-servlets"          % jettyVersion  % "container, test, compile"
-    )
+    ),
+    wartremoverErrors ++= Warts.allBut(Wart.Var, Wart.NonUnitStatements)
   )
 
   lazy val core = Project(
@@ -37,7 +41,7 @@ object Build extends Build {
 
   lazy val example = Project(
     "example", file("example"),
-    settings = defaults ++ coreSettings ++ exampleSettings ++ XwpPlugin.warSettings ++ XwpPlugin.webappSettings ++ XwpPlugin.jetty(port = 8080)
+    settings = defaults ++ exampleSettings ++ XwpPlugin.warSettings ++ XwpPlugin.webappSettings ++ XwpPlugin.jetty(port = 8080)
   ).dependsOn(core)
 
   lazy val root = Project("rxlift", file(".")).aggregate(core, example)
