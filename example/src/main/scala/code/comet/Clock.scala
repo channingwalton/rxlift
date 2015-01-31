@@ -4,7 +4,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 
 import com.casualmiracles.rxlift.Components._
-import com.casualmiracles.rxlift.{RxCometActor, Out}
+import com.casualmiracles.rxlift.{RxCometActor, RxElement}
 import net.liftweb.common.Full
 import rx.lang.scala.Observable
 
@@ -18,7 +18,7 @@ class Clock extends RxCometActor {
   val ticker: Observable[String] = Observable.interval(Duration(2, TimeUnit.SECONDS)).map(_ ⇒ new Date().toString)
 
   // construct a label with the ticker
-  val timeLabel: Out[String] = label.run(ticker)
+  val timeLabel: RxElement[String] = label.run(ticker)
 
   // send the JsCmds emitted by the label to the actor to send to the UI
   publish(timeLabel)

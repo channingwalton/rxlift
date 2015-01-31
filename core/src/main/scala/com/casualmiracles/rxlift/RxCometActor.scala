@@ -9,7 +9,7 @@ trait RxCometActor extends CometActor {
 
   val subscriptions: ListBuffer[Subscription] = ListBuffer.empty[Subscription]
   
-  def publish(components: Out[_]*): Unit = {
+  def publish(components: RxElement[_]*): Unit = {
     components.foreach(o ⇒ handleSubscription(o.jscmd.map(this ! _)))
   }
 

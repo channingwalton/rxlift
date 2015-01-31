@@ -1,7 +1,7 @@
 package code.comet
 
 import com.casualmiracles.rxlift.Components._
-import com.casualmiracles.rxlift.{RxCometActor, Out}
+import com.casualmiracles.rxlift.{RxCometActor, RxElement}
 import net.liftweb.common.Full
 
 import rx.lang.scala.{Observable, Subject}
@@ -43,7 +43,7 @@ class Chat extends RxCometActor {
 
   // a textarea whose content is obtained from Chat.messages
   def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
-  val allMessages: Out[String] = textArea.run(Chat.allMessages.map(msgLine))
+  val allMessages: RxElement[String] = textArea.run(Chat.allMessages.map(msgLine))
 
   publish(allMessages, username, msg)
 

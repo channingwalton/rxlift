@@ -12,35 +12,35 @@ import scala.xml.Text
 object Components {
   private def genId: String = UUID.randomUUID().toString
 
-  def label: Component[String, String] = Component { (in: Observable[String]) ⇒
+  def label: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetHtml(id, Text(v)))
 
     // a label does not emit a value so Out.values is empty
-    Out(Observable.empty, js, <span id={id}></span>, Some(id))
+    RxElement(Observable.empty, js, <span id={id}></span>, Some(id))
   }
 
-  def text: Component[String, String] = Component { (in: Observable[String]) ⇒
+  def text: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
     val subject = Subject[String]()
-    val ui = SHtml.ajaxText("", subject.onNext(_), "id" → id)
+    val ui = SHtml.ajaxText("", v ⇒ subject.onNext(v), "id" → id)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
-    Out(subject, js, ui, Some(id))
+    RxElement(subject, js, ui, Some(id))
   }
 
-  def textArea: Component[String, String] = Component { (in: Observable[String]) ⇒
+  def textArea: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
     val subject = Subject[String]()
-    val ui = SHtml.ajaxTextarea("", subject.onNext(_), "id" → id)
+    val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), "id" → id)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
-    Out(subject, js, ui, Some(id))
+    RxElement(subject, js, ui, Some(id))
   }
 
-  def editable[I, O](component: Component[I, O], edit: Observable[Boolean]): Component[I, O] =
-    Component { in ⇒
-      val inner: Out[O] = component.run(in)
+  def editable[I, O](component: RxComponent[I, O], edit: Observable[Boolean]): RxComponent[I, O] =
+    RxComponent { in ⇒
+      val inner: RxElement[O] = component.run(in)
       val (newUI, id) = inner.id match {
         case Some(existingId) ⇒ (inner.ui, existingId)
         case None ⇒
@@ -49,7 +49,7 @@ object Components {
       }
 
       val editJsCmds = edit.map(setEditability(id, _))
-      Out(inner.values, inner.jscmd.merge(editJsCmds), newUI, Some(id))
+      RxElement(inner.values, inner.jscmd.merge(editJsCmds), newUI, Some(id))
     }
 
   private def setProp(id: String, property: String, value: String): JsCmd = Run(s"$$('#$id').prop('$property', $value)")

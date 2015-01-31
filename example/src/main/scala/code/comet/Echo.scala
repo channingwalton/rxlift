@@ -1,7 +1,7 @@
 package code.comet
 
 import com.casualmiracles.rxlift.Components._
-import com.casualmiracles.rxlift.{RxCometActor, Out}
+import com.casualmiracles.rxlift.{RxCometActor, RxElement}
 import net.liftweb.common.Full
 import rx.lang.scala.Observable
 
@@ -13,7 +13,7 @@ class Echo extends RxCometActor {
   val input = text.run(Observable.empty)
 
   // a label whose value is obtained from the output stream of the input field above
-  val echoLabel: Out[String] = label.run(input.values)
+  val echoLabel: RxElement[String] = label.run(input.values)
 
   // publish the label. No need to do anything with the input as
   // the label maps the inputs.values, so publishing the label
