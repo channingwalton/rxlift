@@ -21,9 +21,13 @@ class Chat extends RxCometActor {
   // whose talking?
   val username = text.run(Observable.empty)
 
-  // what are they saying?
-  val msgObservable = Subject[String]()
-  val msg = text.run(msgObservable)
+  // make an initially disabled text component, enabled by the username being set
+  private val msgEditable = Observable.just(false).merge(username.values.map(_.trim.nonEmpty))
+  val editableMsg = editable(text, msgEditable)
+
+  // run the editableMsh with an input observable used below to reset the input field
+  val msgIn = Subject[String]()
+  val msg = editableMsg.run(msgIn)
 
   // combine the username and messages and map it to a Message
   val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
@@ -31,7 +35,7 @@ class Chat extends RxCometActor {
   // send the user's message to the 'chat server' and blank the msg field
   val messageDistributor = messages.map(m ⇒ {
     Chat.send.onNext(m)
-    msgObservable.onNext("")
+    msgIn.onNext("")
   })
 
   // subscribe to the distributor
