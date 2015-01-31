@@ -18,21 +18,28 @@ class Chat extends RxCometActor {
 
   override def defaultPrefix = Full("chat")
 
+  // whose talking?
   val username = text.run(Observable.empty)
 
+  // what are they saying?
   val msgObservable = Subject[String]()
   val msg = text.run(msgObservable)
+
+  // combine the username and messages and map it to a Message
+  val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
+
+  // send the user's message to the 'chat server' and blank the msg field
+  val messageDistributor = messages.map(m ⇒ {
+    Chat.send.onNext(m)
+    msgObservable.onNext("")
+  })
+
+  // subscribe to the distributor
+  handleSubscription(messageDistributor)
 
   // a textarea whose content is obtained from Chat.messages
   def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
   val allMessages: Out[String] = textArea.run(Chat.allMessages.map(msgLine))
-
-  // send the user's message to everyone and blank their input field
-  val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
-  val messageDistributor = messages.map(m ⇒ {Chat.send.onNext(m); msgObservable.onNext("")} )
-
-  // subscribe to the distributor
-  handleSubscription(messageDistributor)
 
   publish(allMessages, username, msg)
 
