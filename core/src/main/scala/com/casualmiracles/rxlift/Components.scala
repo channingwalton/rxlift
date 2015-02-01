@@ -10,14 +10,14 @@ import rx.lang.scala.{Subject, Observable}
 import scala.xml.Text
 
 object Components {
-  private def genId: String = UUID.randomUUID().toString
+  def genId: String = UUID.randomUUID().toString
 
   def label: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetHtml(id, Text(v)))
 
     // a label does not emit a value so Out.values is empty
-    RxElement(Observable.empty, js, <span id={id}></span>, Some(id))
+    RxElement(Observable.empty, js, <span id={id}></span>, id)
   }
 
   def text: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
@@ -26,7 +26,7 @@ object Components {
     val ui = SHtml.ajaxText("", v ⇒ subject.onNext(v), "id" → id)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
-    RxElement(subject, js, ui, Some(id))
+    RxElement(subject, js, ui, id)
   }
 
   def textArea: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
@@ -35,21 +35,14 @@ object Components {
     val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), "id" → id)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
-    RxElement(subject, js, ui, Some(id))
+    RxElement(subject, js, ui, id)
   }
 
   def editable[I, O](component: RxComponent[I, O], edit: Observable[Boolean]): RxComponent[I, O] =
     RxComponent { in ⇒
       val inner: RxElement[O] = component.run(in)
-      val (newUI, id) = inner.id match {
-        case Some(existingId) ⇒ (inner.ui, existingId)
-        case None ⇒
-          val newId = UUID.randomUUID().toString
-          (<div id={newId}>{inner.ui}</div>, newId)
-      }
-
-      val editJsCmds = edit.map(setEditability(id, _))
-      RxElement(inner.values, inner.jscmd.merge(editJsCmds), newUI, Some(id))
+      val editJsCmds = edit.map(setEditability(inner.id, _))
+      RxElement(inner.values, inner.jscmd.merge(editJsCmds), inner.ui, inner.id)
     }
 
   private def setProp(id: String, property: String, value: String): JsCmd = Run(s"$$('#$id').prop('$property', $value)")
