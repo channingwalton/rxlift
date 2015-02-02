@@ -10,7 +10,17 @@ import rx.lang.scala.{Subject, Observable}
 import scala.xml.Text
 
 object Components {
-  def genId: String = UUID.randomUUID().toString
+  type Id = String
+
+  def genId: Id = UUID.randomUUID().toString
+
+  def createIdAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) = {
+    val id = genId
+    (id, attrs :+ ("id", id))
+  }
+
+  private def idAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) =
+    attrs.find(_._1.toLowerCase == "id").fold(createIdAndAttrs(attrs))(id ⇒ (id._1, attrs))
 
   def label: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
@@ -20,19 +30,19 @@ object Components {
     RxElement(Observable.empty, js, <span id={id}></span>, id)
   }
 
-  def text: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
-    val id = genId
+  def text(attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
+    val (id, attributes) = idAndAttrs(attrs)
     val subject = Subject[String]()
-    val ui = SHtml.ajaxText("", v ⇒ subject.onNext(v), "id" → id)
+    val ui = SHtml.ajaxText("", v ⇒ subject.onNext(v), attributes:_*)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
     RxElement(subject, js, ui, id)
   }
 
-  def textArea: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
-    val id = genId
+  def textArea(attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
+    val (id, attributes) = idAndAttrs(attrs)
     val subject = Subject[String]()
-    val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), "id" → id)
+    val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), attributes:_*)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
     RxElement(subject, js, ui, id)
