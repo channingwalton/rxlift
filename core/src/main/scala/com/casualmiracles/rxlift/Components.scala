@@ -2,7 +2,9 @@ package com.casualmiracles.rxlift
 
 import java.util.UUID
 
+import net.liftweb.common.Box
 import net.liftweb.http.SHtml
+import net.liftweb.http.SHtml.SelectableOption
 import net.liftweb.http.js.JsCmds.Run
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import rx.lang.scala.{Subject, Observable}
@@ -14,7 +16,7 @@ object Components {
 
   def genId: Id = UUID.randomUUID().toString
 
-  def createIdAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) = {
+  private def createIdAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) = {
     val id = genId
     (id, attrs :+ ("id", id))
   }
@@ -43,6 +45,15 @@ object Components {
     val (id, attributes) = idAndAttrs(attrs)
     val subject = Subject[String]()
     val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), attributes:_*)
+    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
+
+    RxElement(subject, js, ui, id)
+  }
+
+  def select(opts: Seq[SelectableOption[String]], deflt: Box[String], attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
+    val (id, attributes) = idAndAttrs(attrs)
+    val subject = Subject[String]()
+    val ui = SHtml.ajaxSelect(opts, deflt, v ⇒ subject.onNext(v), attributes:_*)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
     RxElement(subject, js, ui, id)

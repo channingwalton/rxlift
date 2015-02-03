@@ -3,6 +3,7 @@ package code.comet
 import com.casualmiracles.rxlift.Components._
 import com.casualmiracles.rxlift.{RxCometActor, RxElement}
 import net.liftweb.common.Full
+import net.liftweb.http.js.JsCmds.Focus
 
 import rx.lang.scala.{Observable, Subject}
 import rx.lang.scala.subjects.BehaviorSubject
@@ -33,9 +34,10 @@ class Chat extends RxCometActor {
   val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
 
   // send the user's message to the 'chat server' and blank the msg field
-  val messageDistributor = messages.map(m ⇒ {
+  val messageDistributor = messages.filter(_.msg.trim.nonEmpty).map(m ⇒ {
     Chat.send.onNext(m)
     msgIn.onNext("")
+    this ! Focus(msg.id)
   })
 
   // subscribe to the distributor
