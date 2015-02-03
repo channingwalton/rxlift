@@ -19,7 +19,7 @@ class Chat extends RxCometActor {
   override def defaultPrefix = Full("chat")
 
   // whose talking?
-  val username = text().run(Observable.empty)
+  val username = text().consume(Observable.empty)
 
   // make an initially disabled text component, enabled by the username being set
   val msgEditable = Observable.just(false).merge(username.values.map(_.trim.nonEmpty))
@@ -27,7 +27,7 @@ class Chat extends RxCometActor {
 
   // run the editableMsh with an input observable used below to reset the input field
   val msgIn = Subject[String]()
-  val msg = editableMsg.run(msgIn)
+  val msg = editableMsg.consume(msgIn)
 
   // combine the username and messages and map it to a Message
   val messages = username.values.combineLatest(msg.values).map{ case (u, m) ⇒ Message(u, m) }
@@ -43,7 +43,7 @@ class Chat extends RxCometActor {
 
   // a textarea whose content is obtained from Chat.messages
   def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
-  val allMessages: RxElement[String] = textArea().run(Chat.allMessages.map(msgLine))
+  val allMessages: RxElement[String] = textArea().consume(Chat.allMessages.map(msgLine))
 
   publish(allMessages, username, msg)
 

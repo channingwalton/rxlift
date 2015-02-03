@@ -50,7 +50,7 @@ object Components {
 
   def editable[I, O](component: RxComponent[I, O], edit: Observable[Boolean]): RxComponent[I, O] =
     RxComponent { in ⇒
-      val inner: RxElement[O] = component.run(in)
+      val inner: RxElement[O] = component.consume(in)
       val editJsCmds = edit.map(setEditability(inner.id, _))
       RxElement(inner.values, inner.jscmd.merge(editJsCmds), inner.ui, inner.id)
     }
