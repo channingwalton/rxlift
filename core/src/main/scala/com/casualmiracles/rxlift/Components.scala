@@ -14,16 +14,6 @@ object Components {
   type Id = String
   type Attributes = Seq[(String, String)]
 
-  def genId: Id = UUID.randomUUID().toString
-
-  private def createIdAndAttrs(attrs: Attributes): (Id, Attributes) = {
-    val id = genId
-    (id, attrs :+ ("id", id))
-  }
-
-  private def idAndAttrs(attrs: Attributes): (Id, Attributes) =
-    attrs.find(_._1.toLowerCase == "id").fold(createIdAndAttrs(attrs))(id ⇒ (id._1, attrs))
-
   def label: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
     val id = genId
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetHtml(id, Text(v)))
@@ -61,4 +51,13 @@ object Components {
 
   private def setEditability(id: String, editable: Boolean): JsCmd = setProp(id, "disabled", (!editable).toString)
 
+  def genId: Id = UUID.randomUUID().toString
+
+  private def idAndAttrs(attrs: Attributes): (Id, Attributes) =
+    attrs.find(_._1.toLowerCase == "id").fold(createIdAndAttrs(attrs))(id ⇒ (id._1, attrs))
+
+  private def createIdAndAttrs(attrs: Attributes): (Id, Attributes) = {
+    val id = genId
+    (id, attrs :+ ("id", id))
+  }
 }
