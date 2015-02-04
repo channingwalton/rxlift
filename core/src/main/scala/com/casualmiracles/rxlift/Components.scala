@@ -3,25 +3,25 @@ package com.casualmiracles.rxlift
 import java.util.UUID
 
 import net.liftweb.common.Box
-import net.liftweb.http.SHtml
-import net.liftweb.http.SHtml.SelectableOption
+import net.liftweb.http.SHtml._
 import net.liftweb.http.js.JsCmds.Run
 import net.liftweb.http.js.{JsCmds, JsCmd}
 import rx.lang.scala.{Subject, Observable}
 
-import scala.xml.Text
+import scala.xml.{NodeSeq, Text}
 
 object Components {
   type Id = String
+  type Attributes = Seq[(String, String)]
 
   def genId: Id = UUID.randomUUID().toString
 
-  private def createIdAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) = {
+  private def createIdAndAttrs(attrs: Attributes): (Id, Attributes) = {
     val id = genId
     (id, attrs :+ ("id", id))
   }
 
-  private def idAndAttrs(attrs: Seq[(String, String)]): (Id, Seq[(String, String)]) =
+  private def idAndAttrs(attrs: Attributes): (Id, Attributes) =
     attrs.find(_._1.toLowerCase == "id").fold(createIdAndAttrs(attrs))(id ⇒ (id._1, attrs))
 
   def label: RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
@@ -32,32 +32,14 @@ object Components {
     RxElement(Observable.empty, js, <span id={id}></span>, id)
   }
 
-  def text(attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
-    val (id, attributes) = idAndAttrs(attrs)
-    val subject = Subject[String]()
-    val ui = SHtml.ajaxText("", v ⇒ subject.onNext(v), attributes:_*)
-    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
+  def text(attrs: (String, String)*): RxComponent[String, String] =
+    component((s, a) ⇒ ajaxText("", v ⇒ s.onNext(v), a:_*), attrs)
 
-    RxElement(subject, js, ui, id)
-  }
+  def textArea(attrs: (String, String)*): RxComponent[String, String] =
+    component((s, a) ⇒ ajaxTextarea("", v ⇒ s.onNext(v), a:_*), attrs)
 
-  def textArea(attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
-    val (id, attributes) = idAndAttrs(attrs)
-    val subject = Subject[String]()
-    val ui = SHtml.ajaxTextarea("", v ⇒ subject.onNext(v), attributes:_*)
-    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
-
-    RxElement(subject, js, ui, id)
-  }
-
-  def select(opts: Seq[SelectableOption[String]], deflt: Box[String], attrs: (String, String)*): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
-    val (id, attributes) = idAndAttrs(attrs)
-    val subject = Subject[String]()
-    val ui = SHtml.ajaxSelect(opts, deflt, v ⇒ subject.onNext(v), attributes:_*)
-    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
-
-    RxElement(subject, js, ui, id)
-  }
+  def select(opts: Seq[SelectableOption[String]], deflt: Box[String], attrs: (String, String)*): RxComponent[String, String] =
+    component((s, a) ⇒ ajaxSelect(opts, deflt, v ⇒ s.onNext(v), a:_*), attrs)
 
   def editable[I, O](component: RxComponent[I, O], edit: Observable[Boolean]): RxComponent[I, O] =
     RxComponent { in ⇒
@@ -65,6 +47,15 @@ object Components {
       val editJsCmds = edit.map(setEditability(inner.id, _))
       RxElement(inner.values, inner.jscmd.merge(editJsCmds), inner.ui, inner.id)
     }
+
+  private def component(uiF: (Subject[String], Attributes) => NodeSeq, attrs: Attributes): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
+    val (id, attributes) = idAndAttrs(attrs)
+    val subject = Subject[String]()
+    val ui = uiF(subject, attributes)
+    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
+
+    RxElement(subject, js, ui, id)
+  }
 
   private def setProp(id: String, property: String, value: String): JsCmd = Run(s"$$('#$id').prop('$property', $value)")
 
