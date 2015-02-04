@@ -26,7 +26,7 @@ class Chat extends RxCometActor {
   val msgEditable = Observable.just(false).merge(username.values.map(_.trim.nonEmpty))
   val editableMsg = editable(text(), msgEditable)
 
-  // run the editableMsh with an input observable used below to reset the input field
+  // run the editableMsg with an input observable used below to reset the input field
   val msgIn = Subject[String]()
   val msg = editableMsg.consume(msgIn)
 
@@ -40,12 +40,12 @@ class Chat extends RxCometActor {
     this ! Focus(msg.id)
   })
 
-  // subscribe to the distributor
-  handleSubscription(messageDistributor)
-
   // a textarea whose content is obtained from Chat.messages
   def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
   val allMessages: RxElement[String] = textArea().consume(Chat.allMessages.map(msgLine))
+
+  // subscribe to the distributor
+  handleSubscription(messageDistributor)
 
   publish(allMessages, username, msg)
 
