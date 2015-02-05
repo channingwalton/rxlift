@@ -4,19 +4,14 @@ import net.liftweb.http.js.JsCmd
 import rx.lang.scala.Observable
 
 import scala.xml.NodeSeq
-import scalaz.Semigroup
 
 case class RxElement[T](values: Observable[T], jscmd: Observable[JsCmd], ui: NodeSeq, id: String)
 
-case class RxComponent[I, O](consume: Observable[I] ⇒ RxElement[O])
-
-object RxComponent {
-  implicit def ComponentSemiGroup[I, O]: Semigroup[RxComponent[I, O]] = new Semigroup[RxComponent[I, O]] {
-    override def append(f1: RxComponent[I, O], f2: ⇒ RxComponent[I, O]): RxComponent[I, O] =
-      RxComponent { in ⇒
-        val o1: RxElement[O] = f1.consume(in)
-        val o2: RxElement[O] = f2.consume(in)
-        RxElement(o1.values.merge(o2.values), o1.jscmd.merge(o2.jscmd), o1.ui ++ o2.ui, Components.genId)
-      }
-  }
+case class RxComponent[I, O](consume: Observable[I] ⇒ RxElement[O]) {
+  def +[U <: I, V >: O](other: RxComponent[U, V]): RxComponent[U, V] =
+    RxComponent { in ⇒
+      val o1: RxElement[O] = consume(in)
+      val o2: RxElement[V] = other.consume(in)
+      RxElement(o1.values.merge(o2.values), o1.jscmd.merge(o2.jscmd), o1.ui ++ o2.ui, Components.genId)
+    }
 }

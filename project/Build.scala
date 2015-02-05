@@ -17,7 +17,6 @@ object Build extends Build {
 
   val coreSettings = Seq(
     libraryDependencies ++= List(
-      "org.scalaz"        %% "scalaz-core"    % "7.1.0"       % "compile",
       "io.reactivex"      %% "rxscala"        % "0.23.1"      % "compile",
       "net.liftweb"       %% "lift-webkit"    % "2.6"         % "compile"
     ),
