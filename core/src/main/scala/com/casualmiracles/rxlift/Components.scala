@@ -38,9 +38,9 @@ object Components {
       RxElement(inner.values, inner.jscmd.merge(editJsCmds), inner.ui, inner.id)
     }
 
-  private def component(uiF: (Subject[String], Attributes) => NodeSeq, attrs: Attributes): RxComponent[String, String] = RxComponent { (in: Observable[String]) ⇒
+  private def component[O](uiF: (Subject[O], Attributes) => NodeSeq, attrs: Attributes): RxComponent[String, O] = RxComponent { (in: Observable[String]) ⇒
     val (id, attributes) = idAndAttrs(attrs)
-    val subject = Subject[String]()
+    val subject = Subject[O]()
     val ui = uiF(subject, attributes)
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 

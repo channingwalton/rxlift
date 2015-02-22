@@ -21,7 +21,7 @@ object Build extends Build {
       "net.liftweb"       %% "lift-webkit"    % "2.6"         % "compile"
     ),
     wartremoverErrors ++= Warts.all,
-    wartremoverExcluded ++= Seq("com.casualmiracles.rxlift.RxCometActor")
+    wartremoverExcluded ++= Seq("com.casualmiracles.rxlift.RxCometActor", "code.comet.Tick")
   )
 
   val exampleSettings = Seq(
@@ -31,7 +31,8 @@ object Build extends Build {
       "org.eclipse.jetty" % "jetty-plus"              % jettyVersion  % "container, test, compile",
       "org.eclipse.jetty" % "jetty-servlets"          % jettyVersion  % "container, test, compile"
     ),
-    wartremoverErrors ++= Warts.allBut(Wart.Var, Wart.NonUnitStatements)
+    wartremoverErrors ++= Warts.allBut(Wart.Var, Wart.NonUnitStatements),
+    wartremoverExcluded ++= Seq("com.casualmiracles.rxlift.RxCometActor", "code.comet.Tick")
   )
 
   lazy val core = Project(
