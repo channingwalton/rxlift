@@ -44,7 +44,7 @@ class Chat extends RxCometActor {
 
   // a textarea whose content is obtained from Chat.messages
   def msgLine(msgs: Seq[Message]): String = msgs.map(m ⇒ m.username + ": " + m.msg).mkString("\n")
-  val allMessages: RxElement[String] = textArea().consume(Chat.allMessages.map(msgLine))
+  val allMessages: RxElement[String] = label.consume(Chat.allMessages.map(msgLine))
 
   // publish all the components so their output JsCmds are sent to the client
   publish(allMessages, username, msg)

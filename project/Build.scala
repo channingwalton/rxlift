@@ -18,6 +18,7 @@ object Build extends Build {
   val coreSettings = Seq(
     libraryDependencies ++= List(
       "io.reactivex"      %% "rxscala"        % "0.23.1"      % "compile",
+      "org.scalaz"        %% "scalaz-core"    % "7.1.1"       % "compile",
       "net.liftweb"       %% "lift-webkit"    % "2.6"         % "compile"
     ),
     wartremoverErrors ++= Warts.all,
