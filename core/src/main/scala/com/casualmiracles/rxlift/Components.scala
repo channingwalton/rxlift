@@ -10,7 +10,11 @@ import rx.lang.scala.{Subject, Observable}
 
 import scala.xml.{NodeSeq, Text}
 
+import scalaz.Endo
+import scalaz.Lens
+
 object Components {
+
   type Id = String
   type Attributes = Seq[(String, String)]
 
@@ -38,14 +42,15 @@ object Components {
       RxElement(inner.values, inner.jscmd.merge(editJsCmds), inner.ui, inner.id)
     }
 
-  private def component[O](uiF: (Subject[O], Attributes) => NodeSeq, attrs: Attributes): RxComponent[String, O] = RxComponent { (in: Observable[String]) ⇒
-    val (id, attributes) = idAndAttrs(attrs)
-    val subject = Subject[O]()
-    val ui = uiF(subject, attributes)
-    val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
+  private def component[O](uiF: (Subject[O], Attributes) => NodeSeq, attrs: Attributes): RxComponent[String, O] =
+    RxComponent { (in: Observable[String]) ⇒
+      val (id, attributes) = idAndAttrs(attrs)
+      val subject = Subject[O]()
+      val ui = uiF(subject, attributes)
+      val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetValById(id, v))
 
-    RxElement(subject, js, ui, id)
-  }
+      RxElement(subject, js, ui, id)
+    }
 
   private def setProp(id: String, property: String, value: String): JsCmd = Run(s"$$('#$id').prop('$property', $value)")
 
@@ -60,4 +65,12 @@ object Components {
     val id = genId
     (id, attrs :+ ("id", id))
   }
+
+  def focus[T, F](component: RxComponent[F, F], lens: Lens[T, F]): RxComponent[T, Endo[T]] =
+    RxComponent { in: Observable[T] ⇒
+      val fObs: Observable[F] = in.map(lens.get)
+      val element = component.consume(fObs)
+      val endoOut = element.values.map((f: F) ⇒ Endo((t: T) ⇒ lens.set(t, f)))
+      element.copy(values = endoOut)
+    }
 }
