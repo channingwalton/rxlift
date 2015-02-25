@@ -21,6 +21,6 @@ class Echo extends RxCometActor {
   publish(echoLabel)
 
   // initial render uses the input and label's ui
-  def render = bind("echo" -> (input.ui ++ echoLabel.ui))
+  def render = bind("in" -> input.ui, "out" -> echoLabel.ui)
 
 }
