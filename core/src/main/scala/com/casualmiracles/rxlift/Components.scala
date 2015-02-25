@@ -69,8 +69,8 @@ object Components {
   def focus[T, F](component: RxComponent[F, F], lens: Lens[T, F]): RxComponent[T, Endo[T]] =
     RxComponent { in: Observable[T] ⇒
       val fObs: Observable[F] = in.map(lens.get)
-      val element = component.consume(fObs)
-      val endoOut = element.values.map((f: F) ⇒ Endo((t: T) ⇒ lens.set(t, f)))
-      element.copy(values = endoOut)
+      val element: RxElement[F] = component.consume(fObs)
+      val endoOut: Observable[Endo[T]] = element.values.map((f: F) ⇒ Endo((t: T) ⇒ lens.set(t, f)))
+      RxElement(endoOut, element.jscmd, element.ui, element.id)
     }
 }
