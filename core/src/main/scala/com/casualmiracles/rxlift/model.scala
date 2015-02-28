@@ -14,4 +14,9 @@ case class RxComponent[I, O](consume: Observable[I] ⇒ RxElement[O]) {
       val o2: RxElement[V] = other.consume(in)
       RxElement(o1.values.merge(o2.values), o1.jscmd.merge(o2.jscmd), o1.ui ++ o2.ui, Components.genId)
     }
+
+  def mapUI(f: NodeSeq ⇒ NodeSeq): RxComponent[I, O] = RxComponent { in ⇒
+    val e = consume(in)
+    RxElement(e.values, e.jscmd, f(e.ui), e.id)
+  }
 }
