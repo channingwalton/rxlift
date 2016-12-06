@@ -38,7 +38,10 @@ class Composites extends RxCometActor {
   // for demo purposes we will apply this stream to the original person observable and send it back to the UI
   // In a real system you might get the person from a database, modify it with the Endo and save it.
   val newPerson = person.distinctUntilChanged.combineLatest(pc.values).map {
-    case (old, update) ⇒ update(old)
+    case (old, update) ⇒
+      val n = update(old)
+      println(s"$old -> $n")
+      n
   }.distinctUntilChanged.map(person.onNext(_))
 
   // manage the subscription to the newPerson stream
