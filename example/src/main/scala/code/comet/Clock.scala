@@ -24,5 +24,5 @@ class Clock extends RxCometActor {
   publish(timeLabel)
 
   // initial render uses the label's ui
-  def render = bind("time" -> timeLabel.ui)
+  def render = "#time" #> timeLabel.ui
 }

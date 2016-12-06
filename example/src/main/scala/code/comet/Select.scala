@@ -4,7 +4,6 @@ import com.casualmiracles.rxlift.RxCometActor
 import com.casualmiracles.rxlift.Components._
 
 import net.liftweb.common.Full
-import net.liftweb.http.RenderOut
 import rx.lang.scala.Observable
 
 class Select extends RxCometActor {
@@ -16,5 +15,7 @@ class Select extends RxCometActor {
 
   publish(out)
 
-  override def render: RenderOut = bind("select" -> sel.ui, "label" -> out.ui)
+  override def render =
+    "#select" #> sel.ui &
+      "#label" #> out.ui
 }

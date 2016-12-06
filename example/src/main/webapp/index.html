@@ -9,14 +9,14 @@
     <h2>Welcome to RxLift!</h2>
 
     <lift:comet type="Clock">
-        <p>Current Time: <clk:time>Missing Clock</clk:time></p>
+        <p>Current Time: <span id="time">Missing Clock</span></p>
     </lift:comet>
     <lift:comet type="Echo">
-      Echo: <echo:in></echo:in>&nbsp;<echo:out></echo:out>
+        Echo: <span id="in"></span>&nbsp;<span id="out"></span>
     </lift:comet>
     <h3>Select</h3>
     <lift:comet type="Select">
-        <select:select>no select</select:select> you selected <select:label>nothing</select:label>
+        <span id="select">no select</span> you selected <span id="label">nothing</span>
     </lift:comet>
     <hr/>
     <h3>Chat</h3>
@@ -24,7 +24,7 @@
 
     <hr/>
     <h2>People</h2>
-    <lift:comet type="Composites" />
+    <lift:comet type="Composites"/>
 </div>
 </body>
 </html>

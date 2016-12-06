@@ -24,7 +24,7 @@ class Tick extends CometActor {
   // initial render when the actor is first created for a page
   def render = {
     scheduleNextTick
-    bind("tick" -> <p>Waiting for first tick</p>)
+    "#tick" #> <p>Waiting for first tick</p>
   }
 
   // receive messages and send updates to the browser using partialUpdate

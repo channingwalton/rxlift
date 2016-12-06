@@ -50,6 +50,9 @@ class Chat extends RxCometActor {
   publish(allMessages, username, msg)
 
   // the usual CometActor.render to bind the html for each ui component into an HTML page
-  def render = bind("chat", "messages" -> allMessages.ui, "username" -> username.ui,  "msg" -> msg.ui)
+  def render =
+    "#messages" #> allMessages.ui &
+    "#username" #> username.ui &
+    "#msg" #> msg.ui
 
 }
