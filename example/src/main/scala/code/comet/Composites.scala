@@ -3,7 +3,6 @@ package code.comet
 import com.casualmiracles.rxlift.Components._
 import com.casualmiracles.rxlift.RxCometActor
 import com.casualmiracles.rxlift.RxComponent
-import rx.lang.scala.Observable
 import rx.lang.scala.Subject
 import rx.lang.scala.subjects.BehaviorSubject
 import scalaz.Endo
@@ -29,8 +28,6 @@ object PersonComponent {
 }
 
 class Composites extends RxCometActor {
-
-  import PersonComponent._
 
   // In practice this will be a filtered stream
   val person: Subject[Person] = BehaviorSubject[Person](Person("", ""))

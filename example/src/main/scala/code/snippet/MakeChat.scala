@@ -6,11 +6,11 @@ object MakeChat {
   def render =
     <lift:comet type="Chat" name={UUID.randomUUID().toString}>
       Your name!
-      &nbsp; <chat:username>no name :-(</chat:username>
+      &nbsp; <span id="username">no name :-(</span>
       Speak!
-      &nbsp; <chat:msg>no messages :-(</chat:msg>
+      &nbsp; <span id="msg">no messages :-(</span>
       <pre>
-        <chat:messages>no messages :-(</chat:messages>
+        <span id="messages">no messages :-(</span>
       </pre>
       <br/>
     </lift:comet>
