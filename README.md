@@ -8,7 +8,9 @@ The core idea is to treat UI components as having three components:
 2. an Observable the UI component observes and maps to the UI, e.g. an Observable[String]
 3. an Observable of values produced by the component, e.g. an Observable[String]
 
-This idea is modeled by [RxElement](core/src/main/scala/com/casualmiracles/rxlift/model.scala).
+This idea is modeled by [RxComponent](core/src/main/scala/com/casualmiracles/rxlift/model.scala), which produces
+[RxElements](core/src/main/scala/com/casualmiracles/rxlift/model.scala). RxComponents are factories that when
+given an Observable, return an RxElement that can be rendered in a browser.
 
 This project uses Liftweb to render these RxElements. Have a look at the examples subproject for a demo.
 
