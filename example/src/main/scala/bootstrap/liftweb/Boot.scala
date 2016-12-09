@@ -33,13 +33,13 @@ class Boot {
 
     //Init the jQuery module, see http://liftweb.net/jquery for more information.
     LiftRules.jsArtifacts = JQueryArtifacts
-    JQueryModule.InitParam.JQuery=JQueryModule.JQuery191
+    JQueryModule.InitParam.JQuery=JQueryModule.JQuery310
     JQueryModule.init()
 
     //Show the spinny image when an Ajax call starts
     //LiftRules.ajaxStart =
     //  Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
-    
+
     // Make the spinny image go away when it ends
     //LiftRules.ajaxEnd =
     //  Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
