@@ -4,6 +4,7 @@
 An experimental reactive library for lift web based on [RxScala](https://github.com/ReactiveX/RxScala).
 
 The core idea is to treat UI components as having three components:
+
 1. a UI component, e.g. an *input* element
 2. an Observable the UI component observes and maps to the UI, e.g. an Observable[String]
 3. an Observable of values produced by the component, e.g. an Observable[String]
