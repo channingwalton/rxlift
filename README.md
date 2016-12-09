@@ -29,7 +29,7 @@ class Clock extends RxCometActor {
   val ticker: Observable[String] = Observable.interval(Duration(1, TimeUnit.SECONDS)).map(_ ⇒ new Date().toString)
 
   // using the label component, build an RxElement with the ticker
-  val timeLabel: RxElement[String] = label.consume(ticker)
+  val timeLabel: RxElement[String] = Components.label.consume(ticker)
 
   // send the JsCmds emitted by the label to the actor to send to the UI
   publish(timeLabel)
