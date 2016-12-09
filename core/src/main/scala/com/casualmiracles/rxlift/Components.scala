@@ -22,7 +22,7 @@ object Components {
     val id = genId
     val js: Observable[JsCmd] = in.map(v ⇒ JsCmds.SetHtml(id, Text(v)))
 
-    // a label does not emit a value so Out.values is empty
+    // a label does not emit a value so the RxElement's values field is Observable.empty
     RxElement(Observable.empty, js, <span id={id}></span>, id)
   }
 

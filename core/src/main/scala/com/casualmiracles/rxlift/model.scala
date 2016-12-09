@@ -5,9 +5,26 @@ import rx.lang.scala.Observable
 
 import scala.xml.NodeSeq
 
+/**
+  * RxElement is a reactive UI component
+  * @param values the values emitted by the UI
+  * @param jscmd the JsCmds produced by the component to update the UI in response to changes to its input
+  * @param ui the HTML to render this component
+  * @param id the HTML id of this component
+  */
 case class RxElement[T](values: Observable[T], jscmd: Observable[JsCmd], ui: NodeSeq, id: String)
 
+/**
+  * An RxComponent is a builder of RxElements.
+  * @param consume a function of an Observable[I] returning an RxElement[O]
+  * @tparam I the input observable's type
+  * @tparam O the RxElement's type
+  */
 case class RxComponent[I, O](consume: Observable[I] ⇒ RxElement[O]) {
+
+  /**
+    * Compose this component with another
+    */
   def +[U <: I, V >: O](other: RxComponent[U, V]): RxComponent[U, V] =
     RxComponent { in ⇒
       val o1: RxElement[O] = consume(in)
