@@ -20,6 +20,11 @@ import net.liftmodules.JQueryModule
 class Boot {
   def boot {
 
+    // security policy
+    LiftRules.securityRules = () => {
+      SecurityRules(content = None)
+    }
+
     // where to search snippet
     LiftRules.addToPackages("code")
 
