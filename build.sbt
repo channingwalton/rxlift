@@ -1,17 +1,17 @@
 
-val jettyVersion = "9.3.14.v20161028"
+val jettyVersion = "9.4.4.v20170414"
 
 val defaults = Seq(
   organization := "com.casualmiracles",
-  scalaVersion := "2.11.8",
+  scalaVersion := "2.12.2",
   scalacOptions in (Compile, compile) += "-deprecation"
 )
 
 val coreSettings = Seq(
   libraryDependencies ++= List(
-    "io.reactivex"      %% "rxscala"        % "0.26.4"   % "compile",
-    "org.scalaz"        %% "scalaz-core"    % "7.2.8"    % "compile",
-    "net.liftweb"       %% "lift-webkit"    % "3.0"      % "compile"
+    "io.reactivex"      %% "rxscala"        % "0.26.5"   % "compile",
+    "org.scalaz"        %% "scalaz-core"    % "7.2.12"   % "compile",
+    "net.liftweb"       %% "lift-webkit"    % "3.0.1"    % "compile"
   )
 )
 
