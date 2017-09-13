@@ -11,7 +11,7 @@ val defaults = Seq(
 val coreSettings = Seq(
   libraryDependencies ++= List(
     "io.reactivex"      %% "rxscala"        % "0.26.5"   % "compile",
-    "org.scalaz"        %% "scalaz-core"    % "7.2.12"   % "compile",
+    "org.scalaz"        %% "scalaz-core"    % "7.2.15"   % "compile",
     "net.liftweb"       %% "lift-webkit"    % "3.1.0"    % "compile"
   )
 )
